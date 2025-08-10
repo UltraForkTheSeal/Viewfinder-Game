@@ -4,6 +4,8 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
+using Parabox.CSG;
+using UnityEngine.Rendering;
 
 public class PlayerController : MonoBehaviour
 {
@@ -14,6 +16,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField]
     public Camera cameraCamera;
+    private Bounds frustumBounds;
 
     void Update()
     {
@@ -28,10 +31,6 @@ public class PlayerController : MonoBehaviour
 
         transform.position += moveDirection * speed * Time.deltaTime; // 应用移动
 
-        // ---------------- 旋转（水平） ----------------
-        float mouseX = Input.GetAxis("Mouse X") * sensitivity;
-        transform.Rotate(Vector3.up * mouseX);
-
         // 相机这一块
         if (Input.GetKeyDown(KeyCode.C))
         {
@@ -42,7 +41,36 @@ public class PlayerController : MonoBehaviour
                 planeCube.transform.localScale = new Vector3(10f, 10f, 0.01f);
                 AlignCubeWithPlane(planeCube.transform, plane);
             }*/
-            GenerateFrustumMesh(cameraCamera);
+            GameObject frustumObj = GenerateFrustumMesh(cameraCamera);
+            frustumObj.layer = 7;
+            var collider = frustumObj.AddComponent<MeshCollider>();
+            Bounds bounds = collider.bounds;
+            LayerMask mask = ~((1 << 6) | (1 << 7));
+            Collider[] hits = Physics.OverlapBox(bounds.center, bounds.extents, Quaternion.identity, mask);
+            foreach(var hit in hits)
+            {
+                print(hit.gameObject.name);
+                Model model = CSG.Intersect(hit.gameObject, frustumObj);
+
+                var composite = new GameObject();
+                composite.name = hit.gameObject.name + "_cut";
+                composite.AddComponent<MeshFilter>().sharedMesh = model.mesh;
+                composite.AddComponent<MeshRenderer>().sharedMaterials = model.materials.ToArray();
+                Destroy(hit.gameObject);
+            }
+            frustumBounds = bounds;
+        }
+
+        // ---------------- 旋转（水平） ----------------
+        float mouseX = Input.GetAxis("Mouse X") * sensitivity;
+        transform.Rotate(Vector3.up * mouseX);
+    }
+    private void OnDrawGizmos()
+    {
+        if (frustumBounds!=null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(frustumBounds.center, frustumBounds.size);
         }
     }
 
@@ -87,7 +115,7 @@ public class PlayerController : MonoBehaviour
         return frustumObject;
     }
 
-    void AlignCubeWithPlane(Transform obj, Plane plane)
+    void AlignCubeWithPlane(Transform obj, UnityEngine.Plane plane)
     {
         obj.position = -plane.normal * plane.distance;
         obj.rotation = Quaternion.FromToRotation(Vector3.forward, plane.normal);

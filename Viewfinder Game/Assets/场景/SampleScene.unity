@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 106323377}
   - component: {fileID: 106323376}
   - component: {fileID: 106323375}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: CameraObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -424,7 +424,7 @@ GameObject:
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
   - component: {fileID: 330585548}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -977,7 +977,7 @@ GameObject:
   - component: {fileID: 1129152642}
   - component: {fileID: 1129152641}
   - component: {fileID: 1129152640}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1159,7 +1159,7 @@ GameObject:
   - component: {fileID: 1219678718}
   - component: {fileID: 1219678722}
   - component: {fileID: 1219678723}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1308,7 +1308,7 @@ GameObject:
   - component: {fileID: 1241992621}
   - component: {fileID: 1241992624}
   - component: {fileID: 1241992622}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Camera Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
