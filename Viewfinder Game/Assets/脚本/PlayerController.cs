@@ -10,16 +10,20 @@ using EzySlice;
 
 public class PlayerController : MonoBehaviour
 {
-    public float speed = 5;         // 移动速度
+    public float speed = 5f;         // 移动速度
     public float sensitivity = 2f;   // 鼠标灵敏度
 
     private Vector3 moveDirection;   // 移动方向向量
 
     [SerializeField]
-    public Camera cameraCamera;
-
+    private Camera cameraCamera;
     [SerializeField]
     private Material cuttingMaterial;
+    [SerializeField]
+    private CameraController cameraController;
+    [SerializeField]
+    private GameObject copiedObject;
+
     Bounds frustumBounds;
 
     void Update()
@@ -38,6 +42,9 @@ public class PlayerController : MonoBehaviour
         // 相机这一块
         if (Input.GetKeyDown(KeyCode.C))
         {
+            copiedObject.transform.position = cameraCamera.transform.position;
+            copiedObject.transform.rotation = cameraCamera.transform.rotation;
+
             UnityEngine.Plane[] frustumPlanes = GeometryUtility.CalculateFrustumPlanes(cameraCamera);
             /*foreach(var plane in frustumPlanes)
             {
@@ -45,6 +52,7 @@ public class PlayerController : MonoBehaviour
                 planeCube.transform.localScale = new Vector3(10f, 10f, 0.01f);
                 AlignCubeWithPlane(planeCube.transform, plane);
             }*/
+
             GameObject frustumObj = GenerateFrustumMesh(cameraCamera);
             frustumObj.layer = 7;
             var collider = frustumObj.AddComponent<MeshCollider>();
@@ -62,19 +70,29 @@ public class PlayerController : MonoBehaviour
                 composite.AddComponent<MeshRenderer>().sharedMaterials = model.materials.ToArray();
                 Destroy(hit.gameObject);*/
 
-                GameObject processingTarget = hit.gameObject;
+                GameObject planeCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                GameObject processingTarget = Instantiate(hit.gameObject);
                 for(int i = 0; i < frustumPlanes.Length; i++)
                 {
                     // 先创建平面
-                    GameObject planeCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     planeCube.transform.localScale = new Vector3(10f, 10f, 0.01f);
                     AlignCubeWithPlane(planeCube.transform, frustumPlanes[i]);
 
-                    processingTarget.SliceInstantiate(planeCube.transform.position, planeCube.transform.forward, cuttingMaterial);
-                    Destroy(planeCube);
+                    SlicedHull slicedHull = processingTarget.Slice(planeCube.transform.position, planeCube.transform.forward, cuttingMaterial);
+                    if (slicedHull != null)
+                    {
+                        GameObject upperPart = slicedHull.CreateUpperHull(processingTarget, cuttingMaterial);
+                        upperPart.name = "cut_" + processingTarget.name;
+                        Destroy(processingTarget);
+                        processingTarget = upperPart;
+                    }
                 }
+                Destroy(planeCube);
+                processingTarget.transform.SetParent(copiedObject.transform);
             }
             frustumBounds = bounds;
+            cameraController.enabled = false;
+            this.enabled = false;
         }
 
         // ---------------- 旋转（水平） ----------------

@@ -302,6 +302,37 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2034418136}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &267631907
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 267631908}
+  m_Layer: 0
+  m_Name: Copied
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &267631908
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 267631907}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.7954988, y: 3.203857, z: 2.5132413}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &273342832
 GameObject:
   m_ObjectHideFlags: 0
@@ -1270,7 +1301,9 @@ MonoBehaviour:
   speed: 5
   sensitivity: 2
   cameraCamera: {fileID: 1241992624}
-  cuttingMaterial: {fileID: 0}
+  cuttingMaterial: {fileID: 2100000, guid: dc6618e53c5703e40be0f5012bb1901e, type: 2}
+  cameraController: {fileID: 330585548}
+  copiedObject: {fileID: 267631907}
 --- !u!54 &1219678723
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1724,3 +1757,4 @@ SceneRoots:
   - {fileID: 832575519}
   - {fileID: 1219678721}
   - {fileID: 273342833}
+  - {fileID: 267631908}
