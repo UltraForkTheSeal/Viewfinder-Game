@@ -6,6 +6,7 @@ using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 using Parabox.CSG;
 using UnityEngine.Rendering;
+using EzySlice;
 
 public class PlayerController : MonoBehaviour
 {
@@ -16,7 +17,10 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField]
     public Camera cameraCamera;
-    private Bounds frustumBounds;
+
+    [SerializeField]
+    private Material cuttingMaterial;
+    Bounds frustumBounds;
 
     void Update()
     {
@@ -34,8 +38,8 @@ public class PlayerController : MonoBehaviour
         // 相机这一块
         if (Input.GetKeyDown(KeyCode.C))
         {
-            /*Plane[] frustumPlanes = GeometryUtility.CalculateFrustumPlanes(cameraCamera);
-            foreach(var plane in frustumPlanes)
+            UnityEngine.Plane[] frustumPlanes = GeometryUtility.CalculateFrustumPlanes(cameraCamera);
+            /*foreach(var plane in frustumPlanes)
             {
                 GameObject planeCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 planeCube.transform.localScale = new Vector3(10f, 10f, 0.01f);
@@ -50,13 +54,25 @@ public class PlayerController : MonoBehaviour
             foreach(var hit in hits)
             {
                 print(hit.gameObject.name);
-                Model model = CSG.Intersect(hit.gameObject, frustumObj);
+                /*Model model = CSG.Intersect(hit.gameObject, frustumObj);
 
                 var composite = new GameObject();
                 composite.name = hit.gameObject.name + "_cut";
                 composite.AddComponent<MeshFilter>().sharedMesh = model.mesh;
                 composite.AddComponent<MeshRenderer>().sharedMaterials = model.materials.ToArray();
-                Destroy(hit.gameObject);
+                Destroy(hit.gameObject);*/
+
+                GameObject processingTarget = hit.gameObject;
+                for(int i = 0; i < frustumPlanes.Length; i++)
+                {
+                    // 先创建平面
+                    GameObject planeCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    planeCube.transform.localScale = new Vector3(10f, 10f, 0.01f);
+                    AlignCubeWithPlane(planeCube.transform, frustumPlanes[i]);
+
+                    processingTarget.SliceInstantiate(planeCube.transform.position, planeCube.transform.forward, cuttingMaterial);
+                    Destroy(planeCube);
+                }
             }
             frustumBounds = bounds;
         }
